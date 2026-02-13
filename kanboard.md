@@ -4,6 +4,8 @@
 
 https://gist.github.com/odan/b5f7de8dfbdbf76bef089776c868fea1
 
+SSL : https://medium.com/@chandramuthuraj/installing-nginx-on-windows-a-step-by-step-guide-6750575c63e2
+
 ## Versions
 
 - nginx-1.19.7
@@ -75,6 +77,36 @@ php-cgi.exe -b 127.0.0.1:9123
 Port 1961 from nginx.conf 
 
 Browser : http://localhost:1961/kanboard-1.2.50
+
+
+### API with basic auth
+
+With user
+
+~~~
+ubu@A6:~/kanby$ echo -n 'admin:admin' | base64 -
+YWRtaW46YWRtaW4=
+
+ubu@A6:~/kanby$ curl -H 'Authorization: Basic  YWRtaW46YWRtaW4=' -d '{"jsonrpc": "2.0", "method": "getAllProjects", "id": 1}' http://A6.mshome.net:1961/kanboard-1.2.50/jsonrpc.php
+{"jsonrpc":"2.0","result":[{"id":1,"name":"Chambord2026Equipes","is_active":1,"token":"","last_modified":1770972657,"is_public":0,"is_private":0,"is_everybody_allowed":0,"default_swimlane":"Default swimlane","show_default_swimlane":1,"description":"","identifier":"","start_date":"","end_date":"","owner_id":1,"priority_default":0,"priority_start":0,"priority_end":3,"email":"","predefined_email_subjects":null,"per_swimlane_task_limits":0,"task_limit":0,"enable_global_tags":1,"url":{"board":"http://localhost/?controller=BoardViewController&action=show&project_id=1","list":"http://localhost/?controller=TaskListController&action=show&project_id=1"}},{"id":2,"name":"Chambord2026Victimes","is_active":1,"token":"","last_modified":1770884079,"is_public":0,"is_private":0,"is_everybody_allowed":0,"default_swimlane":"Default swimlane","show_default_swimlane":1,"description":null,"identifier":"","start_date":"","end_date":"","owner_id":1,"priority_default":0,"priority_start":0,"priority_end":3,"email":null,"predefined_email_subjects":null,"per_swimlane_task_limits":0,"task_limit":0,"enable_global_tags":1,"url":{"board":"http://localhost/?controller=BoardViewController&action=show&project_id=2","list":"http://localhost/?controller=TaskListController&action=show&project_id=2"}}],"id":2}
+~~~
+
+With jsonrpc 
+
+Beware of carriage return and wrap
+
+~~~
+Token from kanboard>settings>API
+
+ubu@A6:~/kanby$ token=7c39b3978c36ef91f9848ed42a9ec657dbb8c9523971da979917cacec3cc
+ubu@A6:~/kanby$ auth=$(echo -n "jsonrpc:$token" | base64 -w 0 -)
+
+ubu@A6:~/kanby$ echo $auth
+anNvbnJwYzo3YzM5YjM5NzhjMzZlZjkxZjk4NDhlZDQyYTllYzY1N2RiYjhjOTUyMzk3MWRhOTc5OTE3Y2FjZWMzY2M=
+
+ubu@A6:~/kanby$ curl -H "Authorization: Basic $auth" -d '{"jsonrpc": "2.0", "method": "getAllProjects","id":2}' http://A6.mshome.net:1961/kanboard-1.2.50/jsonrpc.php
+{"jsonrpc":"2.0","result":[{"id":1,"name":"Chambord2026Equipes","is_active":1,"token":"","last_modified":1770972657,"is_public":0,"is_private":0,"is_everybody_allowed":0,"default_swimlane":"Default swimlane","show_default_swimlane":1,"description":"","identifier":"","start_date":"","end_date":"","owner_id":1,"priority_default":0,"priority_start":0,"priority_end":3,"email":"","predefined_email_subjects":null,"per_swimlane_task_limits":0,"task_limit":0,"enable_global_tags":1,"url":{"board":"http://localhost/?controller=BoardViewController&action=show&project_id=1","list":"http://localhost/?controller=TaskListController&action=show&project_id=1"}},{"id":2,"name":"Chambord2026Victimes","is_active":1,"token":"","last_modified":1770884079,"is_public":0,"is_private":0,"is_everybody_allowed":0,"default_swimlane":"Default swimlane","show_default_swimlane":1,"description":null,"identifier":"","start_date":"","end_date":"","owner_id":1,"priority_default":0,"priority_start":0,"priority_end":3,"email":null,"predefined_email_subjects":null,"per_swimlane_task_limits":0,"task_limit":0,"enable_global_tags":1,"url":{"board":"http://localhost/?controller=BoardViewController&action=show&project_id=2","list":"http://localhost/?controller=TaskListController&action=show&project_id=2"}}],"id":2}
+~~~
 
 ## Files 
 
